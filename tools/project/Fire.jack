@@ -1,0 +1,207 @@
+/*
+Fire - class that allows to fire up to sixteen Bullets.
+By default all Bullets are inactive and wait in a "pool".
+When player fires a Bullet, first inactive Bullet from a pool
+becomes active, its coords are set to player's coords
+and animation of a projectile begins.
+When Bullet reaches upper end of screen or hits a target
+it becomes inactive and returns to the pool.
+
+There's also code to check for Bullet's collision with enemies.
+
+Collision detection code is tricky:
+1. a method handleEnemyDown is called, it accepts enemies set
+2. then, a method checkIfHit is called on enemies set, all Bullets are passed there as argument
+3. checkIfHit calls method handleOneEnemyDown of this class for all enemies in a set
+4. handleOneEnemyDown checks one particular buller with one particular enemy for collision
+
+In this tricky call chain we have O(Bullets*enemies) checks, comparing every Bullet
+with every enemy ship.
+ */
+class Fire {
+    /* pool of 16 Bullets */
+    field Bullet Bullet01;
+    field Bullet Bullet02;
+    field Bullet Bullet03;
+    field Bullet Bullet04;
+    field Bullet Bullet05;
+    field Bullet Bullet06;
+    field Bullet Bullet07;
+    field Bullet Bullet08;
+    field Bullet Bullet09;
+    field Bullet Bullet10;
+    field Bullet Bullet11;
+    field Bullet Bullet12;
+    field Bullet Bullet13;
+    field Bullet Bullet14;
+    field Bullet Bullet15;
+
+    constructor Fire new() {
+        let Bullet01 = Bullet.new();
+        let Bullet02 = Bullet.new();
+        let Bullet03 = Bullet.new();
+        let Bullet04 = Bullet.new();
+        let Bullet05 = Bullet.new();
+        let Bullet06 = Bullet.new();
+        let Bullet07 = Bullet.new();
+        let Bullet08 = Bullet.new();
+        let Bullet09 = Bullet.new();
+        let Bullet10 = Bullet.new();
+        let Bullet11 = Bullet.new();
+        let Bullet12 = Bullet.new();
+        let Bullet13 = Bullet.new();
+        let Bullet14 = Bullet.new();
+        let Bullet15 = Bullet.new();
+        return this;
+    }
+
+    method void dispose() {
+        do Bullet01.dispose();
+        do Bullet02.dispose();
+        do Bullet03.dispose();
+        do Bullet04.dispose();
+        do Bullet05.dispose();
+        do Bullet06.dispose();
+        do Bullet07.dispose();
+        do Bullet08.dispose();
+        do Bullet09.dispose();
+        do Bullet10.dispose();
+        do Bullet11.dispose();
+        do Bullet12.dispose();
+        do Bullet13.dispose();
+        do Bullet14.dispose();
+        do Bullet15.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void run(Invaders e) {
+        /* gets called from programs mainloop.
+           Makes each Bullet fly if necessary,
+           also checks for collisions */
+        do Bullet01.run();
+        do Bullet02.run();
+        do Bullet03.run();
+        do Bullet04.run();
+        do Bullet05.run();
+        do Bullet06.run();
+        do Bullet07.run();
+        do Bullet08.run();
+        do Bullet09.run();
+        do Bullet10.run();
+        do Bullet11.run();
+        do Bullet12.run();
+        do Bullet13.run();
+        do Bullet14.run();
+        do Bullet15.run();
+        do handleEnemyDown(e);
+        return;
+    }
+
+    /** fire Bullet from coords x, y **/
+    method void fire(int x, int y) {
+        /* tries to find first inactive Bullet
+           to launch it */
+        if (~Bullet01.getActive()) {
+            do Bullet01.fire(x, y);
+        } else { if (~Bullet02.getActive()) {
+            do Bullet02.fire(x, y);
+        } else { if (~Bullet03.getActive()) {
+            do Bullet03.fire(x, y);
+        } else { if (~Bullet04.getActive()) {
+            do Bullet04.fire(x, y);
+        } else { if (~Bullet05.getActive()) {
+            do Bullet05.fire(x, y);
+        } else { if (~Bullet06.getActive()) {
+            do Bullet06.fire(x, y);
+        } else { if (~Bullet07.getActive()) {
+            do Bullet07.fire(x, y);
+        } else { if (~Bullet08.getActive()) {
+            do Bullet08.fire(x, y);
+        } else { if (~Bullet09.getActive()) {
+            do Bullet09.fire(x, y);
+        } else { if (~Bullet10.getActive()) {
+            do Bullet10.fire(x, y);
+        } else { if (~Bullet11.getActive()) {
+            do Bullet11.fire(x, y);
+        } else { if (~Bullet12.getActive()) {
+            do Bullet12.fire(x, y);
+        } else { if (~Bullet13.getActive()) {
+            do Bullet13.fire(x, y);
+        } else { if (~Bullet14.getActive()) {
+            do Bullet14.fire(x, y);
+        } else { if (~Bullet15.getActive()) {
+            do Bullet15.fire(x, y);
+        }}}}}}}}}}}}}}}
+        return;
+    }
+
+    /** checks collision between a Bullet and an enemy ship **/
+    method boolean isEnemyDown(Bullet b, EnemyAnimation e) {
+        var int bx, by, ex, ey;
+        if (~b.getActive()) { return false; }
+        if (~e.isAlive()) { return false; }
+        let bx = b.getX();
+        let by = b.getY();
+        let ex = e.getX();
+        let ey = e.getY();
+        if (by < ey) { // Bullet is higher than enemy
+            // x coord of a Bullet and enemy overlaps
+            if (bx > (ex - 18)) {
+                if (bx < (ex + 18)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** kill an enemy ship with a Bullet **/
+    method void kill(Bullet b, EnemyAnimation e) {
+        do e.explode(); // start explosion animation, mark enemy as inactive, etc
+        do b.deactivate(); // disable Bullet, its job is done
+        return;
+    }
+
+    /** check all enemies for collision with all Bullets **/
+    method void handleEnemyDown(Invaders enemies) {
+        do enemies.checkIfHit(this);
+        return;
+    }
+
+    /** checks one enemy ship for collision with all Bullets **/
+    method void handleOneEnemyDown(EnemyAnimation enemy) {
+        if (isEnemyDown(Bullet01, enemy)) {
+            do kill(Bullet01, enemy);
+        } else { if (isEnemyDown(Bullet02, enemy)) {
+            do kill(Bullet02, enemy);
+        } else { if (isEnemyDown(Bullet03, enemy)) {
+            do kill(Bullet03, enemy);
+        } else { if (isEnemyDown(Bullet04, enemy)) {
+            do kill(Bullet04, enemy);
+        } else { if (isEnemyDown(Bullet05, enemy)) {
+            do kill(Bullet05, enemy);
+        } else { if (isEnemyDown(Bullet06, enemy)) {
+            do kill(Bullet06, enemy);
+        } else { if (isEnemyDown(Bullet07, enemy)) {
+            do kill(Bullet07, enemy);
+        } else { if (isEnemyDown(Bullet08, enemy)) {
+            do kill(Bullet08, enemy);
+        } else { if (isEnemyDown(Bullet09, enemy)) {
+            do kill(Bullet09, enemy);
+        } else { if (isEnemyDown(Bullet10, enemy)) {
+            do kill(Bullet10, enemy);
+        } else { if (isEnemyDown(Bullet11, enemy)) {
+            do kill(Bullet11, enemy);
+        } else { if (isEnemyDown(Bullet12, enemy)) {
+            do kill(Bullet12, enemy);
+        } else { if (isEnemyDown(Bullet13, enemy)) {
+            do kill(Bullet13, enemy);
+        } else { if (isEnemyDown(Bullet14, enemy)) {
+            do kill(Bullet14, enemy);
+        } else { if (isEnemyDown(Bullet15, enemy)) {
+            do kill(Bullet15, enemy);
+        }}}}}}}}}}}}}}}
+        return;
+    }
+}
